@@ -1,0 +1,225 @@
+[General]
+
+# ================ Общие параметры Surge для iOS и macOS ================ #
+
+# > Уровень логов: verbose, info, notify или warning. Не рекомендуется включать подробные
+# > логи (verbose) при повседневном использовании, так как это может значительно снизить производительность.
+loglevel = notify
+
+# > Протокол IPv6. Включает полную поддержку IPv6. После включения при обращении к домену
+# > будет запрашиваться запись AAAA. Даже если параметр выключен, доступ по IPv6-адресу возмож напрямую.
+ipv6 = true
+
+# > Разрешить IPv6 через Surge VIF. Полезно, если вы хотите, чтобы Surge обрабатывал исходные TCP-соединения к IPv6-адресам.
+# > off   : никогда не использовать IPv6 для настройки Surge VIF
+# > auto  : использовать только при наличии действующей локальной сети IPv6
+# > always: всегда использовать IPv6 для настройки Surge VIF
+ipv6-vif = auto
+
+# > DNS-серверы. Сначала используется системный DNS, при сбое — публичные резервные.
+dns-server = system, 1.1.1.1, 8.8.8.8, 9.9.9.9
+
+# > Шифрованные DNS-серверы (DoH). Основное разрешение будет идти через них.
+encrypted-dns-server = https://1.1.1.1/dns-query, https://dns.google/dns-query, https://dns.quad9.net/dns-query
+
+# > DoH следует политике исходящих соединений (трафик DNS будет идти по тем же правилам, что и обычный трафик).
+encrypted-dns-follow-outbound-mode = true
+
+# > Пропустить проверку TLS-сертификата у DoH-сервера. Это небезопасно.
+encrypted-dns-skip-cert-verification = false
+
+# > Обход прокси. В iOS этот параметр заставляет Surge VIF, а не прокси, обрабатывать соединения
+# > с указанными доменами/адресами. В macOS применяется при включённой опции «Назначить системным прокси».
+# > Используется для устранения проблем совместимости с некоторыми приложениями.
+# > Примеры: apple.com, *apple.com, 192.168.2.* или 192.168.2.0/24
+# > Примечание: если задан IP-адрес или диапазон, обход будет работать только при прямом подключении по этому IP.
+# > Если подключение происходит по домену, разрешающемуся в этот IP, прокси будет применяться.
+skip-proxy = localhost, *.local, 0.0.0.0/8, 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 192.0.0.0/24, 192.0.2.0/24, 192.168.0.0/16, 224.0.0.0/4, 240.0.0.0/4, ::1/128, fe80::/10, fc00::/7, ff00::/8
+
+# > Surge VIF может обрабатывать только TCP и UDP. Используйте этот параметр для исключения определённых IP-диапазонов, чтобы весь трафик шёл мимо Surge.
+# > Примечание: параметр применим только к Surge VIF. Запросы, обрабатываемые Surge Proxy Server, не затрагиваются.
+# > Используйте вместе с skip-proxy и настраивайте tun-excluded-routes для обхода HTTP-трафика.
+tun-excluded-routes = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, 127.0.0.0/8, 100.64.0.0/10, 224.0.0.0/4, 240.0.0.0/4, ::1/128, fe80::/10, fc00::/7, ff00::/8
+
+# > Исключить простые имена хостов. Аналог skip-proxy, но применяется к именам без точки.
+# > Примеры: mysql01, redis01
+exclude-simple-hostnames = true
+
+# > Доступ внешнего контроллера. Позволяет внешним инструментам (например, Surge Dashboard на macOS и пульту Surge iOS) управлять Surge. Пример: key@0.0.0.0:6166
+external-controller-access = zsv000915@127.0.0.1:6166
+
+# > Использовать HTTPS вместо HTTP. Требуется предварительная настройка CA-сертификата MitM. Необходимо вручную установить сертификат на клиентское устройство.
+# http-api-tls =
+
+# > Включить веб-панель управления Surge через браузер.
+http-api-web-dashboard = false
+
+# > Показ страницы ошибки при отклонении. Если запрос — обычный HTTP, то будет показана страница REJECT.
+show-error-page-for-reject = true
+
+# > По умолчанию Surge VIF устанавливается как маршрут по умолчанию. Но так как маршруты Wi-Fi более специфичны, часть трафика может не идти через Surge.
+# > Этот параметр позволяет вручную добавить более узкие маршруты.
+# tun-included-routes =
+
+# > URL для проверки соединения с интернетом (используется политикой DIRECT).
+internet-test-url = http://connectivitycheck.gstatic.com/generate_204
+
+# > URL по умолчанию для проверки прокси-политики.
+proxy-test-url = http://1.1.1.1/generate_204
+# > Таймаут теста соединения (в секундах).
+test-timeout = 5
+
+# > Всегда возвращать реальный IP. При обработке DNS через Surge VIF возвращает настоящие IP, а не поддельные.
+# > Это список хостов. Подробнее: https://manual.nssurge.com/others/host-list.html
+# > Префикс - исключает хост
+# > Поддерживаются * и ?
+# > С суффиксом :port — сопоставление по порту. Без порта применяется порт 80 (или 443 при MITM). :0 — все порты.
+# > Также поддерживается <ip-address> для прямого сопоставления IP.
+# > Примеры: -*icloud*, -*.facebook.com, -*dropbox*, -<ip>, *
+always-real-ip = *.local, *.lan, *.home.arpa, *.srv, *.arpa, *.invalid, *.localhost, localhost, *.localdomain
+
+# > Перехват DNS. По умолчанию Surge возвращает поддельные IP только при использовании встроенного DNS (198.18.0.2).
+# > Запросы к другим DNS пересылаются. Некоторые устройства (например, Google-колонки) используют зашитые 8.8.8.8 — можно перехватить с помощью этого параметра.
+# > Пример: hijack-dns = *:53 перехватывает все DNS-запросы.
+hijack-dns = 8.8.8.8:53, 1.1.1.1:53
+
+# > Обрабатывать TCP-соединения как HTTP-запросы. В этом случае запросы будут обрабатываться HTTP-движком Surge, включая возможности перехвата, перезаписи и скриптов.
+# > Это список хостов. Подробнее: https://manual.nssurge.com/others/host-list.html
+# force-http-engine-hosts =
+
+# > Использовать локальные записи хостов при подключении по прокси. По умолчанию DNS-запросы при проксификации выполняются на сервере.
+# > При включении — используется IP из локального DNS-кеша.
+use-local-host-item-for-proxy = false
+
+# > URL для загрузки базы GeoIP
+# geoip-maxmind-url = https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
+
+# > Отключить автоматическое обновление GeoIP-базы
+disable-geoip-db-auto-update = false
+
+# > iOS может использовать DNS-запросы типа SVCB вместо обычных A-запросов, что мешает Surge возвращать поддельные IP. Эта опция отключает SVCB-запросы.
+allow-dns-svcb = false
+
+# > Параметры UDP-теста для прокси. Пример: apple.com@8.8.8.8
+proxy-test-udp = dns.google@8.8.8.8
+
+# > Поведение при несовпадении UDP и политики (если политика не поддерживает UDP). Возможные значения: DIRECT или REJECT.
+# > Можно изменить на direct, если ни один прокси не поддерживает UDP, но учтите возможные риски конфиденциальности.
+# > При высокой загрузке системы приоритет отдается UDP-пакетам (так называемый игровой режим). (если что-то ломается — временно попробуй DIRECT)
+udp-policy-not-supported-behaviour = REJECT
+udp-priority = false
+
+# > Surge автоматически определяет протокол TCP-запросов на порты 80 и 443. Это позволяет включить расширенные функции HTTP/HTTPS.
+# > Для исключения доменов из автоопределения укажите их здесь. Это список хостов. Подробнее: https://manual.nssurge.com/others/host-list.html
+# always-raw-tcp-hosts = *.baidu.com
+
+# ================ Параметры Surge только для iOS ================ #
+
+# > Разрешить доступ к прокси по Wi-Fi из других устройств локальной сети
+allow-wifi-access = false
+
+# > Порт HTTP-прокси Surge при доступе по Wi-Fi
+wifi-access-http-port = 6152
+
+# > Порт SOCKS5-прокси Surge при доступе по Wi-Fi
+wifi-access-socks5-port = 6153
+
+# > Аутентификация для HTTP-прокси Surge. Пример: имя:пароль
+wifi-access-http-auth = surge:zsv000915
+
+# > Включить Wi-Fi помощник (при плохом Wi-Fi использовать мобильную сеть). Включать только при наличии безлимитного трафика.
+wifi-assist = true
+
+# > Скрыть иконку VPN в строке состояния
+hide-vpn-icon = false
+
+# > При плохом Wi-Fi соединяться одновременно по Wi-Fi и мобильной сети. Улучшает стабильность при переключении сетей.
+# > Применяется ко всем TCP и DNS-запросам. Включать только при безлимитном мобильном интернете.
+all-hybrid = true
+
+# > Разрешить доступ к прокси при включённой функции «Личный хотспот» с других устройств
+allow-hotspot-access = false
+
+# > Обрабатывать весь трафик. Некоторые приложения могут привязываться к физическим интерфейсам, чтобы обойти Surge.
+# > Эта опция заставляет Surge обрабатывать весь трафик. Требуется iOS 14.0+. Может вызывать проблемы с AirDrop, Xcode, Surge Dashboard по USB и т.п. Использовать с осторожностью.
+include-all-networks = false
+
+# > Обрабатывать локальный трафик (LAN). Требуется iOS 14.2+. Использовать вместе с include-all-networks=true. Может вызывать побочные эффекты.
+include-local-networks = false
+
+# > Обрабатывать трафик службы уведомлений Apple (APNs). Требует include-all-networks=true
+include-apns = false
+
+# > Обрабатывать трафик сервисов мобильной связи (VoLTE, Wi-Fi-звонки, MMS и т.п.). Некоторые операторы могут направлять такой трафик в обход интернета.
+# > Требует include-all-networks=true.
+include-cellular-services = false
+
+# > Режим совместимости. Этот параметр управляет рабочим режимом Surge iOS.
+# > 0: Авто. В версиях до 5.8.0 соответствует 1, начиная с 5.8.0 — соответствует 3
+# > 1: Перехват прокси + VIF. Приоритет отдается прокси. Лучшее быстродействие, но некоторые приложения могут отказывать из-за обнаружения прокси.
+# > 2: Только перехват прокси
+# > 3: Только VIF (режим по умолчанию в новых версиях)
+# > 4: Прокси + VIF, но прокси использует адрес VIF вместо loopback
+# > 5: Прокси + VIF, но VIF использует множество мелких маршрутов, без маршрута по умолчанию (может помочь обойти проблемы с HomeKit и др.)
+compatibility-mode = 3
+
+# > Блокировка QUIC
+block-quic = all-proxy
+
+[Rule]
+# ----------DIRECT-правила для сервисного UDP------------ --
+# STUN / WebRTC / VoIP / игровые консоли (только UDP)
+AND,((PROTOCOL,UDP), (DEST-PORT,3478-3481)),DIRECT
+# NTP (точное время)
+AND,((PROTOCOL,UDP),(DEST-PORT,123)),DIRECT
+# mDNS / Bonjour
+AND,((PROTOCOL,UDP),(DEST-PORT,5353)),DIRECT
+# SSDP / UPnP
+AND,((PROTOCOL,UDP),(DEST-PORT,1900)),DIRECT
+
+
+# ------- Apple / iCloud / App Store — всегда DIRECT -------
+DOMAIN-SUFFIX,apple.com,DIRECT
+DOMAIN-SUFFIX,cdn-apple.com,DIRECT
+DOMAIN-SUFFIX,aaplimg.com,DIRECT
+DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT
+DOMAIN-SUFFIX,icloud.com,DIRECT
+DOMAIN-SUFFIX,icloud-content.com,DIRECT
+DOMAIN-SUFFIX,me.com,DIRECT
+DOMAIN-SUFFIX,apple-mapkit.com,DIRECT
+DOMAIN-SUFFIX,apps.apple.com,DIRECT
+DOMAIN-SUFFIX,itunes.apple.com,DIRECT
+DOMAIN-SUFFIX,updates.cdn-apple.com,DIRECT
+DOMAIN-SUFFIX,swcdn.apple.com,DIRECT
+DOMAIN,token.safebrowsing.apple,DIRECT
+DOMAIN-SUFFIX,safebrowsing.apple,DIRECT
+DOMAIN-SUFFIX,apple,DIRECT
+DOMAIN-SUFFIX,mzstatic.com,DIRECT
+DOMAIN-SUFFIX,push-apple.com.akadns.net,DIRECT
+DOMAIN-SUFFIX,appldnld.apple.com,DIRECT
+DOMAIN-SUFFIX,testflight.apple.com,DIRECT
+IP-CIDR,17.0.0.0/8,DIRECT,no-resolve
+
+# ----Принудительный DIRECT для LAN/принтеров/умного дома----
+# Чтоб локалка не шла через VIF/прокси.
+IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+
+# -----------------Приложения MacOS DIRECT------------------
+PROCESS-NAME,"/Applications/Dolphin Anty.app/",DIRECT
+PROCESS-NAME,/System/Applications/FaceTime.app/,DIRECT
+PROCESS-NAME,"/Applications/Caramba Switcher.app/Contents/MacOS/Caramba Switcher",DIRECT
+
+# --------------------RU сайты DIRECT-----------------------
+DOMAIN-SUFFIX,ru,DIRECT
+DOMAIN-SUFFIX,su,DIRECT
+DOMAIN-SUFFIX,xn--p1ai,DIRECT
+GEOIP,RU,DIRECT
+
+# ---------------------FINAL RULE----------------------------
+FINAL,MAIN
+
+[URL Rewrite]
+^https?://(www\.)?yandex\.ru https://www.ya.ru 302
+^https?://(www\.)?google\.ru https://www.google.com 302
